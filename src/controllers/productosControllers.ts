@@ -9,8 +9,8 @@ export const nuevoProducto = async  (req: Request, res: Response) => {
         const {nombre, cantidad, precio}: Producto = req.body;
 
         if(!nombre || !cantidad || !precio ) return res.status(401).json('Faltan valores para poder proceder.');
-
-        const resultado: number[] = await knex('productos').insert({nombre, cantidad, precio, id_usuario: req.usuario?.id});
+        const nombreMayuscula = nombre.charAt(0).toUpperCase() + nombre.slice(1);
+        const resultado: number[] = await knex('productos').insert({nombre: nombreMayuscula, cantidad, precio, id_usuario: req.usuario?.id});
 
         res.status(200).json({
             id: resultado[0],
