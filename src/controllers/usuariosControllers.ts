@@ -89,6 +89,7 @@ export const editarUsuario = async (req: Request, res: Response) => {
     try {
         if(req.body.contraseña) req.body.contraseña = await bcrypt.hash(req.body.contraseña, 8);
         if(req.body.id || req.body.monedas) return res.status(401).json('No autorizado para modificar esos valores.')
+        if(req.body.nombre.length < 1) return res.status(401).json('Elija un nombre más largo')
         const resultado = await knex('usuarios').where('id', req.usuario?.id).update(req.body);
         if(resultado === 0) return res.status(401).json('Algo ha ido mal.')
         const usuario: Usuario = await knex('usuarios').where('id', req.usuario?.id).first()
