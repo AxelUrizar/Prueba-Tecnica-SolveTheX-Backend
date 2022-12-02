@@ -1,4 +1,4 @@
-import { borrarTodosLosUsuarios, borrarUsuario, editarUsuario, listaUsuarios, login, logout, nuevoUsuario, perfil } from "../controllers/usuariosControllers";
+import { borrarTodosLosUsuarios, borrarUsuario, editarUsuario, listaUsuarios, login, logout, nuevoUsuario, perfil, perfilUsuario } from "../controllers/usuariosControllers";
 
 import express from 'express'
 const router = express.Router();
@@ -12,6 +12,8 @@ router.post('/login', login);
 router.delete('/logout', auth, logout);
 
 router.get('/listaUsuarios', listaUsuarios);
+
+router.get('/perfil', auth, perfilUsuario);
 
 router.get('/perfil/:id', perfil);
 

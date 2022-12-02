@@ -10,12 +10,10 @@ const jwt = require('jsonwebtoken');
 export const nuevoUsuario = async (req: Request, res: Response) => {
     try {
         const {nombre, email, contraseña}: Usuario = req.body;
-        
         if(!nombre || !contraseña || !email) return res.status(401).json('Faltan valores para poder proceder.');
         if(contraseña.length < 5) return res.status(401).json('La contraseña debe tener almenos 5 valores.');
 
         const contraseñaEncriptada: string = await bcrypt.hash(contraseña, 8);
-
         const resultado: number[] = await knex('usuarios').insert({nombre: nombre, email: email, contraseña: contraseñaEncriptada, monedas: 1000});
 
         res.status(200).json({
@@ -77,6 +75,15 @@ export const perfil = async (req: Request, res: Response) => {
         res.status(500).json(error);
     }
 };
+
+export const perfilUsuario = async (req: Request, res: Response) => {
+    try {
+        const usuario: Usuario = await knex('usuarios').where('id', req.usuario?.id).first();
+        usuario ? res.status(200).json(usuario) : res.status(401).json('Usuario no encontrado.')
+    } catch (error) {
+        res.status(500).json(error)
+    }
+}
 
 export const editarUsuario = async (req: Request, res: Response) => {
     try {
