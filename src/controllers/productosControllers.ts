@@ -112,6 +112,7 @@ export const comprarProducto = async(req: Request, res: Response) => {
             const objExistente = await knex('productos').where('nombre', producto.nombre).where('id_usuario', comprador.id).first();
             if (objExistente) {
                 await knex('productos').where('id', objExistente.id).update({cantidad: objExistente.cantidad + cantidad})
+                await knex('productos').where('id', producto.id).del();
             } else {
                 await knex('productos').where('id', producto.id).update({id_usuario: comprador.id, enVenta: 0});
             }
