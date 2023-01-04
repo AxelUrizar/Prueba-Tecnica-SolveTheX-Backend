@@ -12,7 +12,7 @@ export const nuevoProducto = async  (req: Request, res: Response) => {
         const nombreMayuscula = nombre.charAt(0).toUpperCase() + nombre.slice(1);
         const resultado: number[] = await knex('productos').insert({nombre: nombreMayuscula, cantidad, precio, id_usuario: req.usuario?.id});
 
-        res.status(200).json({
+        return res.status(200).json({
             id: resultado[0],
             nombre: nombre,
             cantidad: cantidad,
@@ -20,34 +20,34 @@ export const nuevoProducto = async  (req: Request, res: Response) => {
             id_usuario: req.usuario?.id
         })
     } catch (error) {
-        res.status(500).json(error)
+        return res.status(500).json(error)
     }
 }
 
 export const listaProductos = async (req: Request, res: Response) => {
     try {
         const listaProductos: Producto[] = await knex('productos').select('*');
-        res.status(200).json(listaProductos)
+        return res.status(200).json(listaProductos)
     } catch (error) {
-        res.status(500).json(error)
+        return res.status(500).json(error)
     }
 }
 
 export const listaProductosEnVenta = async (req: Request, res: Response) => {
     try {
         const listaProductos: Producto[] = await knex('productos').where('enVenta', 1);
-        res.status(200).json(listaProductos)
+        return res.status(200).json(listaProductos)
     } catch (error) {
-        res.status(500).json(error)
+        return res.status(500).json(error)
     }
 }
 
 export const productosUsuario = async (req: Request, res: Response) => {
     try {
         const listaProductos: Producto[] = await knex('productos').where('id_usuario', req.params.id_usuario);
-        res.status(200).json(listaProductos)
+        return res.status(200).json(listaProductos)
     } catch (error) {
-        res.status(500).json(error)
+        return res.status(500).json(error)
     }
 }
 
@@ -56,9 +56,9 @@ export const productoIndividual = async(req: Request, res: Response) => {
         const producto: Producto = await knex('productos').where('id', req.params.id).first();
         if(!producto) return res.status(401).json('Producto no encontrado.');
 
-        res.status(200).json(producto);
+        return res.status(200).json(producto);
     } catch (error) {
-        res.status(500).json(error);
+        return res.status(500).json(error);
     }
 }
 
@@ -74,9 +74,9 @@ export const modificarProducto = async (req: Request, res: Response) => {
         if(resultado === 0 ) return res.status(401).json('Algo ha ido mal.');
 
         const productoFinal: Producto = await knex('productos').where('id', id).first();
-        res.status(200).json(productoFinal)
+        return res.status(200).json(productoFinal)
     } catch (error) {
-        res.status(500).json(error)
+        return res.status(500).json(error)
     }
 }
 
@@ -118,10 +118,10 @@ export const comprarProducto = async(req: Request, res: Response) => {
             }
         }
 
-        res.status(200).json('Producto comprado con éxito.')
+        return res.status(200).json('Producto comprado con éxito.')
 
     } catch (error) {
-        res.status(500).json(error)
+        return res.status(500).json(error)
     }
 }
 
@@ -134,15 +134,15 @@ export const eliminarProducto = async (req: Request, res: Response) => {
 
         resultado === 1 ? res.status(200).json('Borrado con éxito.') : res.status(401).json('Algo ha ido mal.');
     } catch (error) {
-        res.status(500).json(error)
+        return res.status(500).json(error)
     }
 }
 
 export const borrarTodosLosProductos = async (req: Request, res: Response) => {
     try {
         await knex('productos').del().where('id', '!=', 'null')
-        res.status(200).json('Productos borrados.')
+        return res.status(200).json('Productos borrados.')
     } catch (error) {
-        res.status(500).json(error)
+        return res.status(500).json(error)
     }
 }

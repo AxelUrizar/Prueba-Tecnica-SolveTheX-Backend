@@ -8,6 +8,7 @@ const app = (0, express_1.default)();
 app.get('/', (req, res) => {
     res.send('Hello');
 });
+
 app.listen(4000, () => {
     console.log('====================================');
     console.log('Server running on port: 4000');

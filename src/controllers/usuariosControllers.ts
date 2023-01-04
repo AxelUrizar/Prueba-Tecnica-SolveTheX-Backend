@@ -16,14 +16,14 @@ export const nuevoUsuario = async (req: Request, res: Response) => {
         const contraseñaEncriptada: string = await bcrypt.hash(contraseña, 8);
         const resultado: number[] = await knex('usuarios').insert({nombre: nombre, email: email, contraseña: contraseñaEncriptada, monedas: 1000});
 
-        res.status(200).json({
-            id: resultado[0],
+        return res.status(200).json({
+        id: resultado[0],
             nombre: nombre,
             email: email,
             monedas: 1000
         });
     } catch (error) {
-        res.status(500).json(error);
+        return res.status(500).json(error);
     }
 };
 
@@ -40,9 +40,9 @@ export const login = async (req: Request, res: Response) => {
         const token = jwt.sign({idUsuario: usuario.id}, process.env.JWT_SECRET);
         await knex('tokens').insert({token: token, id_usuario: usuario.id})
 
-        res.status(200).json({usuario, token});
+        return res.status(200).json({usuario, token});
     } catch (error) {
-        res.status(500).json(error)
+        return res.status(500).json(error)
     }
 }
 
@@ -52,18 +52,18 @@ export const logout = async (req: Request, res: Response) => {
         if(!token) return res.status(401).json('Token inexistente.');
 
         await knex('tokens').where('token', req.token).del();
-        res.status(200).json('Logout completado.')
+        return res.status(200).json('Logout completado.')
     } catch (error) {
-        res.status(500).json(error)
+        return res.status(500).json(error)
     }
 }
 
 export const listaUsuarios = async (req: Request, res: Response) => {
     try {
         const listaUsuarios: Usuario[] = await knex('usuarios').select('*');
-        res.status(200).json(listaUsuarios);
+        return res.status(200).json(listaUsuarios);
     } catch (error) {
-        res.status(500).json(error);
+        return res.status(500).json(error);
     }
 };
 
@@ -72,7 +72,7 @@ export const perfil = async (req: Request, res: Response) => {
         const usuario: Usuario = await knex('usuarios').where('id', req.params.id).first();
         usuario ? res.status(200).json(usuario) : res.status(401).json('Usuario no encontrado.')
     } catch (error) {
-        res.status(500).json(error);
+        return res.status(500).json(error);
     }
 };
 
@@ -81,21 +81,22 @@ export const perfilUsuario = async (req: Request, res: Response) => {
         const usuario: Usuario = await knex('usuarios').where('id', req.usuario?.id).first();
         usuario ? res.status(200).json(usuario) : res.status(401).json('Usuario no encontrado.')
     } catch (error) {
-        res.status(500).json(error)
+        return res.status(500).json(error)
     }
 }
 
 export const editarUsuario = async (req: Request, res: Response) => {
     try {
         if(req.body.contraseña) req.body.contraseña = await bcrypt.hash(req.body.contraseña, 8);
-        if(req.body.id || req.body.monedas) return res.status(401).json('No autorizado para modificar esos valores.')
-        if(req.body.nombre.length < 1) return res.status(401).json('Elija un nombre más largo')
+        if(req.body.id || req.body.monedas) return res.status(401).json('No autorizado para modificar esos valores.');
+        if(req.body.nombre.length < 1) return res.status(401).json('Elija un nombre más largo.');
         const resultado = await knex('usuarios').where('id', req.usuario?.id).update(req.body);
-        if(resultado === 0) return res.status(401).json('Algo ha ido mal.')
-        const usuario: Usuario = await knex('usuarios').where('id', req.usuario?.id).first()
-        res.status(200).json(usuario)
+        if(resultado === 0) return res.status(401).json('Algo ha ido mal.');
+        const usuario: Usuario = await knex('usuarios').where('id', req.usuario?.id).first();
+
+        return res.status(200).json(usuario)
     } catch (error) {
-        res.status(500).json(error)
+        return res.status(500).json(error)
     }
 };
 
@@ -105,15 +106,15 @@ export const borrarUsuario = async (req: Request, res: Response) => {
 
         resultado === 1 ? res.status(200).json('Borrado con éxito.') : res.status(401).json('Algo ha ido mal.')
     } catch (error) {
-        res.status(500).json(error)
+        return res.status(500).json(error)
     }
 };
 
 export const borrarTodosLosUsuarios = async (req: Request, res: Response) => {
     try {
         await knex('usuarios').del().where('id', '!=', 'null')
-        res.status(200).json('Usuarios borrados.')
+        return res.status(200).json('Usuarios borrados.')
     } catch (error) {
-        res.status(500).json(error)
-    }
-}
+        return res.status(500).json(error)
+    } 
+}    
